@@ -1,0 +1,107 @@
+{
+  "project": {
+    "key": "DEMO",
+    "name": "EngineerX Demo Project"
+  },
+  "issues": [
+    {
+      "key": "DEMO-101",
+      "type": "Story",
+      "summary": "Create User Authentication API",
+      "description": "Implement a secure user authentication system with JWT tokens. The API should handle user login, logout, and token refresh operations.",
+      "acceptance_criteria": [
+        "POST /api/auth/login accepts email and password, returns JWT token",
+        "POST /api/auth/logout invalidates the current token",
+        "POST /api/auth/refresh generates a new token from refresh token",
+        "All endpoints return appropriate HTTP status codes",
+        "Passwords must be validated (min 8 chars, 1 uppercase, 1 number)"
+      ],
+      "priority": "High",
+      "status": "To Do",
+      "assignee": "developer@company.com",
+      "labels": ["backend", "api", "security"],
+      "tech_stack": ["Python", "FastAPI", "JWT"],
+      "estimated_hours": 16
+    },
+    {
+      "key": "DEMO-102",
+      "type": "Story",
+      "summary": "Build User Profile Component",
+      "description": "Create a React component that displays user profile information with edit capabilities. Should show avatar, name, email, and bio.",
+      "acceptance_criteria": [
+        "Display user avatar with fallback to initials",
+        "Show editable fields: name, email, bio",
+        "Implement inline editing with save/cancel buttons",
+        "Show loading state while fetching data",
+        "Handle and display validation errors",
+        "Responsive design for mobile and desktop"
+      ],
+      "priority": "Medium",
+      "status": "To Do",
+      "assignee": "frontend@company.com",
+      "labels": ["frontend", "react", "ui"],
+      "tech_stack": ["React", "TypeScript", "TailwindCSS"],
+      "estimated_hours": 12
+    },
+    {
+      "key": "DEMO-103",
+      "type": "Story",
+      "summary": "Implement Product Search Service",
+      "description": "Build a search service that allows users to search products by name, category, and price range. Should support pagination and sorting.",
+      "acceptance_criteria": [
+        "GET /api/products/search accepts query, category, minPrice, maxPrice params",
+        "Support pagination with page and limit parameters",
+        "Allow sorting by price, name, or relevance",
+        "Return total count for pagination UI",
+        "Implement fuzzy matching for product names",
+        "Cache frequently searched queries"
+      ],
+      "priority": "High",
+      "status": "In Progress",
+      "assignee": "developer@company.com",
+      "labels": ["backend", "api", "search"],
+      "tech_stack": ["Python", "FastAPI", "SQLAlchemy"],
+      "estimated_hours": 20
+    },
+    {
+      "key": "DEMO-104",
+      "type": "Story",
+      "summary": "Create Dashboard Analytics Widget",
+      "description": "Build a reusable analytics widget component that displays key metrics with charts. Should support line, bar, and pie chart types.",
+      "acceptance_criteria": [
+        "Accept data prop with labels and values",
+        "Support chart types: line, bar, pie",
+        "Show loading skeleton while data fetches",
+        "Display trend indicator (up/down arrow with percentage)",
+        "Tooltip on hover showing exact values",
+        "Export chart as PNG option"
+      ],
+      "priority": "Medium",
+      "status": "To Do",
+      "assignee": "frontend@company.com",
+      "labels": ["frontend", "react", "charts"],
+      "tech_stack": ["React", "TypeScript", "Recharts"],
+      "estimated_hours": 14
+    },
+    {
+      "key": "DEMO-105",
+      "type": "Story",
+      "summary": "Build Notification Service",
+      "description": "Create a notification microservice that handles email, SMS, and push notifications. Should support templates and scheduling.",
+      "acceptance_criteria": [
+        "POST /api/notifications/send accepts type, recipient, template, data",
+        "Support notification types: email, sms, push",
+        "Template system with variable substitution",
+        "Queue notifications for async processing",
+        "Schedule notifications for future delivery",
+        "Track delivery status and retry failed sends"
+      ],
+      "priority": "High",
+      "status": "To Do",
+      "assignee": "developer@company.com",
+      "labels": ["backend", "api", "notifications"],
+      "tech_stack": ["Python", "FastAPI", "Redis", "Celery"],
+      "estimated_hours": 24
+    }
+  ]
+}

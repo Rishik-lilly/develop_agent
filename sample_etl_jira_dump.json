@@ -1,0 +1,139 @@
+{
+  "project": {
+    "key": "ETL",
+    "name": "Data Pipeline Project"
+  },
+  "issues": [
+    {
+      "key": "ETL-101",
+      "type": "Story",
+      "summary": "Create Customer Dimension Table",
+      "description": "Create a dimension table for customer data in the data warehouse. This table will serve as the master customer reference for all downstream analytics.",
+      "acceptance_criteria": [
+        "Create DIM_CUSTOMER table with surrogate key",
+        "Include columns: customer_id, first_name, last_name, email, phone, address, city, state, zip, country",
+        "Add SCD Type 2 columns: effective_date, expiry_date, is_current",
+        "Add audit columns: created_at, updated_at, created_by",
+        "Create appropriate indexes for query performance"
+      ],
+      "source_system": "Salesforce CRM",
+      "target_schema": "DW_ANALYTICS",
+      "target_table": "DIM_CUSTOMER",
+      "labels": ["sql", "ddl", "dimension"],
+      "tech_stack": ["SQL Server", "T-SQL"],
+      "priority": "High"
+    },
+    {
+      "key": "ETL-102",
+      "type": "Story",
+      "summary": "Build Customer ETL Insert/Update Procedure",
+      "description": "Create a stored procedure to load customer data from staging to dimension table with SCD Type 2 logic.",
+      "acceptance_criteria": [
+        "INSERT new customers with is_current = 1",
+        "UPDATE existing customers: set is_current = 0, expiry_date = current_date for changed records",
+        "INSERT new version of changed customers with is_current = 1",
+        "Handle NULL values appropriately",
+        "Log record counts: inserted, updated, unchanged",
+        "Include error handling with TRY-CATCH"
+      ],
+      "source_table": "STG_CUSTOMER",
+      "target_table": "DIM_CUSTOMER",
+      "source_schema": "STAGING",
+      "target_schema": "DW_ANALYTICS",
+      "business_key": "customer_id",
+      "tracked_columns": ["first_name", "last_name", "email", "phone", "address", "city", "state", "zip"],
+      "labels": ["sql", "etl", "scd2", "stored-procedure"],
+      "tech_stack": ["SQL Server", "T-SQL"],
+      "priority": "High"
+    },
+    {
+      "key": "ETL-103",
+      "type": "Story",
+      "summary": "Create Sales Fact Table",
+      "description": "Create a fact table for sales transactions with foreign keys to dimension tables.",
+      "acceptance_criteria": [
+        "Create FACT_SALES table with composite key",
+        "Include measures: quantity, unit_price, discount, tax, total_amount",
+        "Add foreign keys: customer_key, product_key, date_key, store_key",
+        "Add degenerate dimensions: order_number, line_number",
+        "Partition by sale_date for performance",
+        "Create columnstore index for analytics queries"
+      ],
+      "source_system": "ERP System",
+      "target_schema": "DW_ANALYTICS",
+      "target_table": "FACT_SALES",
+      "grain": "One row per order line item",
+      "labels": ["sql", "ddl", "fact-table"],
+      "tech_stack": ["SQL Server", "T-SQL"],
+      "priority": "High"
+    },
+    {
+      "key": "ETL-104",
+      "type": "Story",
+      "summary": "Build Sales Data Load Procedure",
+      "description": "Create stored procedure to load daily sales data from staging to fact table with lookups to dimensions.",
+      "acceptance_criteria": [
+        "SELECT from STG_SALES joining to get dimension keys",
+        "Lookup customer_key from DIM_CUSTOMER using business key",
+        "Lookup product_key from DIM_PRODUCT using product_code",
+        "Lookup date_key from DIM_DATE using sale_date",
+        "Handle missing dimension keys with -1 (unknown)",
+        "INSERT only new records (incremental load)",
+        "Use MERGE for upsert capability",
+        "Log load statistics to ETL_LOG table"
+      ],
+      "source_table": "STG_SALES",
+      "target_table": "FACT_SALES",
+      "source_schema": "STAGING",
+      "target_schema": "DW_ANALYTICS",
+      "dimension_lookups": [
+        {"dim_table": "DIM_CUSTOMER", "business_key": "customer_id", "surrogate_key": "customer_key"},
+        {"dim_table": "DIM_PRODUCT", "business_key": "product_code", "surrogate_key": "product_key"},
+        {"dim_table": "DIM_DATE", "business_key": "sale_date", "surrogate_key": "date_key"}
+      ],
+      "labels": ["sql", "etl", "fact-load", "stored-procedure"],
+      "tech_stack": ["SQL Server", "T-SQL"],
+      "priority": "High"
+    },
+    {
+      "key": "ETL-105",
+      "type": "Story",
+      "summary": "Create Data Quality Validation Queries",
+      "description": "Build SQL queries to validate data quality after ETL loads complete.",
+      "acceptance_criteria": [
+        "Check for NULL values in required columns",
+        "Validate referential integrity between fact and dimensions",
+        "Check for duplicate records on business keys",
+        "Validate date ranges are logical (no future dates)",
+        "Check numeric columns are within expected ranges",
+        "Generate summary statistics for monitoring",
+        "Output results to DQ_RESULTS table"
+      ],
+      "tables_to_validate": ["FACT_SALES", "DIM_CUSTOMER", "DIM_PRODUCT"],
+      "target_schema": "DW_ANALYTICS",
+      "labels": ["sql", "data-quality", "validation"],
+      "tech_stack": ["SQL Server", "T-SQL"],
+      "priority": "Medium"
+    },
+    {
+      "key": "ETL-106",
+      "type": "Story",
+      "summary": "Build Incremental Extract Query",
+      "description": "Create SQL query to extract changed records from source system based on last modified timestamp.",
+      "acceptance_criteria": [
+        "SELECT all columns needed for staging",
+        "Filter by modified_date > last_extract_date",
+        "Include deleted records flag if soft deletes",
+        "Order by modified_date for consistent processing",
+        "Parameterize the watermark date",
+        "Handle timezone conversions if needed"
+      ],
+      "source_table": "CUSTOMERS",
+      "source_schema": "CRM_DB",
+      "watermark_column": "modified_date",
+      "labels": ["sql", "extract", "incremental"],
+      "tech_stack": ["SQL Server", "T-SQL"],
+      "priority": "Medium"
+    }
+  ]
+}
